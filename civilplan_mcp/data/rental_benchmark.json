@@ -1,0 +1,10 @@
+{
+  "창고_물류": {
+    "수도권": { "monthly_per_m2": 8000, "cap_rate": 0.055 },
+    "지방": { "monthly_per_m2": 5000, "cap_rate": 0.065 }
+  },
+  "근린생활시설": {
+    "수도권_1종": { "monthly_per_m2": 25000, "cap_rate": 0.04 },
+    "지방": { "monthly_per_m2": 12000, "cap_rate": 0.055 }
+  }
+}

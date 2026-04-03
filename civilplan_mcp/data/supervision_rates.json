@@ -1,0 +1,8 @@
+{
+  "building": {
+    "base_rate": 0.032
+  },
+  "civil": {
+    "base_rate": 0.028
+  }
+}

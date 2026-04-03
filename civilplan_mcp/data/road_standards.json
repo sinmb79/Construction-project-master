@@ -1,0 +1,16 @@
+{
+  "소로": {
+    "shoulder": 0.5,
+    "ascon_surface_mm": 50,
+    "ascon_base_mm": 60,
+    "subbase_mm": 200,
+    "frost_mm": 200
+  },
+  "중로": {
+    "shoulder": 1.0,
+    "ascon_surface_mm": 60,
+    "ascon_base_mm": 70,
+    "subbase_mm": 250,
+    "frost_mm": 200
+  }
+}

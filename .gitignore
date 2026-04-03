@@ -1,0 +1,12 @@
+.env
+.venv/
+*.pyc
+__pycache__/
+.pytest_cache/
+output/
+civilplan.db
+civilplan_mcp/data/land_prices/*
+!civilplan_mcp/data/land_prices/.gitkeep
+!civilplan_mcp/data/land_prices/README.md
+civilplan_mcp/data/.update_required_*
+civilplan_mcp/data/update_log.json

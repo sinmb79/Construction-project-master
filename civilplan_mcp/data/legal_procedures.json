@@ -1,0 +1,60 @@
+{
+  "procedures": [
+    {
+      "id": "PER-01",
+      "category": "인허가",
+      "name": "도시·군관리계획 결정",
+      "law": "국토의 계획 및 이용에 관한 법률 제30조",
+      "threshold": "도시계획시설 도로 사업",
+      "authority": "지자체",
+      "duration_min_months": 6,
+      "duration_max_months": 12,
+      "mandatory": true,
+      "note": "선행 행정절차",
+      "reference_url": "https://law.go.kr",
+      "domain": "토목_도로"
+    },
+    {
+      "id": "PER-02",
+      "category": "인허가",
+      "name": "개발행위허가",
+      "law": "국토의 계획 및 이용에 관한 법률 제56조",
+      "threshold": "개발사업 일반",
+      "authority": "지자체",
+      "duration_min_months": 2,
+      "duration_max_months": 4,
+      "mandatory": true,
+      "note": "입지 조건 확인 필요",
+      "reference_url": "https://law.go.kr",
+      "domain": "복합"
+    },
+    {
+      "id": "PER-03",
+      "category": "환경평가",
+      "name": "소규모환경영향평가",
+      "law": "환경영향평가법 제43조",
+      "threshold": "개발면적 기준",
+      "authority": "환경부/지자체",
+      "duration_min_months": 2,
+      "duration_max_months": 4,
+      "mandatory": false,
+      "note": "사업 조건별 적용",
+      "reference_url": "https://law.go.kr",
+      "domain": "복합"
+    },
+    {
+      "id": "PUB-01",
+      "category": "공공건축",
+      "name": "공공건축 사전검토",
+      "law": "건축서비스산업 진흥법 제21조",
+      "threshold": "공공건축 전체",
+      "authority": "건축공간연구원",
+      "duration_min_months": 1,
+      "duration_max_months": 2,
+      "mandatory": true,
+      "note": "건축 전용 절차",
+      "reference_url": "https://law.go.kr",
+      "domain": "건축"
+    }
+  ]
+}

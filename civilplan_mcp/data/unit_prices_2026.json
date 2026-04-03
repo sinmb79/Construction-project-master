@@ -1,0 +1,41 @@
+{
+  "version": "2026.04",
+  "items": [
+    {
+      "category": "포장",
+      "item": "아스콘표층(밀입도13mm)",
+      "spec": "t=50mm",
+      "unit": "t",
+      "base_price": 96000,
+      "source": "조달청 표준시장단가 2026 상반기",
+      "year": 2026
+    },
+    {
+      "category": "배수",
+      "item": "L형측구",
+      "spec": "300x300",
+      "unit": "m",
+      "base_price": 85000,
+      "source": "표준품셈 2026",
+      "year": 2026
+    },
+    {
+      "category": "상수도",
+      "item": "PE관 DN100",
+      "spec": "압력관",
+      "unit": "m",
+      "base_price": 42000,
+      "source": "표준품셈 2026",
+      "year": 2026
+    },
+    {
+      "category": "하수도",
+      "item": "오수관 VR250",
+      "spec": "중력식",
+      "unit": "m",
+      "base_price": 76000,
+      "source": "표준품셈 2026",
+      "year": 2026
+    }
+  ]
+}

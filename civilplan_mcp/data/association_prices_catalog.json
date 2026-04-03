@@ -1,0 +1,17 @@
+{
+  "version": "2026.04",
+  "sources": [
+    {
+      "id": "WAGE-01",
+      "name": "건설업 시중노임단가",
+      "publisher": "대한건설협회",
+      "update_cycle": "반기"
+    },
+    {
+      "id": "WASTE-01",
+      "name": "건설폐기물 처리단가",
+      "publisher": "한국건설폐기물협회",
+      "update_cycle": "연 1회"
+    }
+  ]
+}
