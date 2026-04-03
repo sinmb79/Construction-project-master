@@ -17,17 +17,17 @@ CivilPlan MCP is a FastMCP server that helps AI agents (Claude, ChatGPT, etc.) p
 
 > **철학 | Philosophy**: 제4의길-AI와 함께 새로운 세상을 만들어갑니다.  -- 전문 기획 지식에 대한 접근 불평등을 줄입니다.
 > Reduce inequality in access to expert planning knowledge. Free to use, modify, and distribute.
-<img width="765" height="531" alt="image" src="https://github.com/user-attachments/assets/78c2fc86-059e-44d4-91f5-b821de7fa180" />
-<img width="757" height="689" alt="image" src="https://github.com/user-attachments/assets/bbd063b8-106b-442d-89f7-15ef45796fe4" />
-<img width="623" height="770" alt="image" src="https://github.com/user-attachments/assets/bfd7b157-3ce4-4cb6-8e38-91ec79b37234" />
-<img width="616" height="718" alt="image" src="https://github.com/user-attachments/assets/6c901740-a3d8-427e-80f5-f756b2b27a63" />
-<img width="655" height="444" alt="image" src="https://github.com/user-attachments/assets/8fe258ff-ac8a-4693-bab5-505edc18fe5c" />
-<img width="732" height="703" alt="image" src="https://github.com/user-attachments/assets/a46a310e-dc41-44f3-b521-c54f4b07036b" />
-<img width="900" height="845" alt="image" src="https://github.com/user-attachments/assets/0c2b6dde-e63f-4bf5-8253-a7ec8fb7edbe" />
-<img width="686" height="533" alt="image" src="https://github.com/user-attachments/assets/2a26a518-57c6-45cd-a711-9358d27d05fc" />
-<img width="651" height="321" alt="image" src="https://github.com/user-attachments/assets/728b0d1d-e525-48e4-9cc8-6be6d0eee0e1" />
-<img width="926" height="598" alt="image" src="https://github.com/user-attachments/assets/99140321-1533-40a0-b989-c657fc798d21" />
-<img width="1082" height="631" alt="image" src="https://github.com/user-attachments/assets/088a8038-a23b-4d3f-96d1-9f748deb56cb" />
+![시스템 개요 System Overview](docs/images/01_system_overview.png)
+![워크플로우 Workflow](docs/images/02_workflow.png)
+![단계별 다이어그램 Phase Diagram](docs/images/03_phase_diagram.png)
+![프로세스 흐름 Process Flow](docs/images/04_process_flow.png)
+![사업비 요약 Cost Summary](docs/images/05_cost_summary.png)
+![사업 일정 Project Timeline](docs/images/06_project_timeline.png)
+![종합 뷰 Comprehensive View](docs/images/07_comprehensive_view.png)
+![출력 예시 Output Examples](docs/images/08_output_examples.png)
+![문서 생성 Document Generation](docs/images/09_doc_generation.png)
+![상세 워크플로우 Detailed Workflow](docs/images/10_detailed_workflow.png)
+![평면도 Plan View](docs/images/11_plan_view.png)
 ---
 
 ## 이런 분들에게 유용합니다 | Who Is This For?
