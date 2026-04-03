@@ -1,4 +1,4 @@
-# CivilPlan MCP
+# Construction-Project-Planning-Master-MCP
 
 **건설/건축 공사 사업계획을 AI와 함께 만듭니다**
 **Plan Korean construction projects with AI assistance**
@@ -15,9 +15,19 @@ CivilPlan MCP는 한국 토목/건축 사업의 **기획 단계 전 과정**을 
 
 CivilPlan MCP is a FastMCP server that helps AI agents (Claude, ChatGPT, etc.) plan Korean civil engineering and building projects. It automates cost estimation, legal procedure identification, drawing generation, and more -- all through the MCP protocol.
 
-> **철학 | Philosophy**: 홍익인간 -- 전문 기획 지식에 대한 접근 불평등을 줄입니다.
+> **철학 | Philosophy**: 제4의길-AI와 함께 새로운 세상을 만들어갑니다.  -- 전문 기획 지식에 대한 접근 불평등을 줄입니다.
 > Reduce inequality in access to expert planning knowledge. Free to use, modify, and distribute.
-
+<img width="765" height="531" alt="image" src="https://github.com/user-attachments/assets/78c2fc86-059e-44d4-91f5-b821de7fa180" />
+<img width="757" height="689" alt="image" src="https://github.com/user-attachments/assets/bbd063b8-106b-442d-89f7-15ef45796fe4" />
+<img width="623" height="770" alt="image" src="https://github.com/user-attachments/assets/bfd7b157-3ce4-4cb6-8e38-91ec79b37234" />
+<img width="616" height="718" alt="image" src="https://github.com/user-attachments/assets/6c901740-a3d8-427e-80f5-f756b2b27a63" />
+<img width="655" height="444" alt="image" src="https://github.com/user-attachments/assets/8fe258ff-ac8a-4693-bab5-505edc18fe5c" />
+<img width="732" height="703" alt="image" src="https://github.com/user-attachments/assets/a46a310e-dc41-44f3-b521-c54f4b07036b" />
+<img width="900" height="845" alt="image" src="https://github.com/user-attachments/assets/0c2b6dde-e63f-4bf5-8253-a7ec8fb7edbe" />
+<img width="686" height="533" alt="image" src="https://github.com/user-attachments/assets/2a26a518-57c6-45cd-a711-9358d27d05fc" />
+<img width="651" height="321" alt="image" src="https://github.com/user-attachments/assets/728b0d1d-e525-48e4-9cc8-6be6d0eee0e1" />
+<img width="926" height="598" alt="image" src="https://github.com/user-attachments/assets/99140321-1533-40a0-b989-c657fc798d21" />
+<img width="1082" height="631" alt="image" src="https://github.com/user-attachments/assets/088a8038-a23b-4d3f-96d1-9f748deb56cb" />
 ---
 
 ## 이런 분들에게 유용합니다 | Who Is This For?
