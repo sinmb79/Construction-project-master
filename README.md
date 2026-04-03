@@ -54,6 +54,32 @@ python server.py
 
 The server starts on `127.0.0.1:8765` and exposes the MCP endpoint at `/mcp`.
 
+## API Key Setup
+
+CivilPlan supports two local-only key flows:
+
+### Option A: `.env`
+
+1. Copy `.env.example` to `.env`
+2. Fill in your own keys
+3. Start the server
+
+`.env` is ignored by git and loaded automatically at startup.
+
+### Option B: encrypted local storage
+
+```bash
+python setup_keys.py
+```
+
+Or import an existing `.env` file into encrypted storage:
+
+```bash
+python setup_keys.py --from-env-file .env
+```
+
+On Windows, this stores the keys with DPAPI under your local user profile so the same machine and user account are required to decrypt them.
+
 ## Environment Variables
 
 ```env
@@ -63,6 +89,8 @@ VWORLD_API_KEY=
 
 - `DATA_GO_KR_API_KEY`: public data portal API key used for benchmark probing and future official integrations
 - `VWORLD_API_KEY`: VWorld API key used for address-to-PNU lookup and cadastral queries
+
+Live keys are intentionally not committed to the public repository.
 
 ## Client Connection
 
@@ -120,6 +148,7 @@ If parsing fails, the server creates `.update_required_*` flag files and emits s
 - Land-price lookup requires manually downloaded source files under `civilplan_mcp/data/land_prices/`.
 - Nara benchmark validation currently probes API availability and falls back to local heuristics when the public endpoint is unavailable.
 - Updater fetchers are conservative and may request manual review when source pages change.
+- Public repository builds do not include live API credentials. Users should set their own keys through `.env` or `setup_keys.py`.
 
 ## Verification
 

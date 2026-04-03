@@ -64,6 +64,8 @@ async def civilplan_lifespan(_: FastMCP) -> AsyncIterator[dict[str, object]]:
     missing_keys = check_api_keys()
     for key in missing_keys:
         logger.warning("API key missing: %s", key)
+    if missing_keys:
+        logger.warning("Provide keys in .env or run `python setup_keys.py` for encrypted local storage.")
 
     scheduler = build_scheduler(start=True)
     try:
