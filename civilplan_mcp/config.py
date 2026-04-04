@@ -28,7 +28,7 @@ def _load_secure_api_keys(path: Path) -> dict[str, str]:
 
 class Settings(BaseModel):
     app_name: str = "civilplan_mcp"
-    version: str = "1.0.0"
+    version: str = "2.0.0"
     host: str = "127.0.0.1"
     port: int = 8765
     http_path: str = "/mcp"
@@ -38,6 +38,7 @@ class Settings(BaseModel):
     key_store_path: Path = Field(default_factory=default_key_store_path)
     data_go_kr_api_key: str = Field(default_factory=lambda: os.getenv("DATA_GO_KR_API_KEY", ""))
     vworld_api_key: str = Field(default_factory=lambda: os.getenv("VWORLD_API_KEY", ""))
+    gemini_api_key: str = Field(default_factory=lambda: os.getenv("GEMINI_API_KEY", ""))
 
 
 @lru_cache(maxsize=1)
@@ -50,6 +51,8 @@ def get_settings() -> Settings:
         settings.data_go_kr_api_key = secure_keys.get("DATA_GO_KR_API_KEY", "")
     if not settings.vworld_api_key:
         settings.vworld_api_key = secure_keys.get("VWORLD_API_KEY", "")
+    if not settings.gemini_api_key:
+        settings.gemini_api_key = secure_keys.get("GEMINI_API_KEY", "")
 
     settings.output_dir.mkdir(parents=True, exist_ok=True)
     return settings
@@ -62,4 +65,6 @@ def check_api_keys() -> list[str]:
         missing.append("DATA_GO_KR_API_KEY")
     if not settings.vworld_api_key:
         missing.append("VWORLD_API_KEY")
+    if not settings.gemini_api_key:
+        missing.append("GEMINI_API_KEY")
     return missing

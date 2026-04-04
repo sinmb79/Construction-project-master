@@ -11,14 +11,15 @@ def test_build_server_config_defaults() -> None:
     assert config["path"] == "/mcp"
 
 
-def test_server_registers_all_19_tools() -> None:
+def test_server_registers_all_20_tools() -> None:
     app = build_mcp()
     tools = asyncio.run(app.list_tools())
     names = {tool.name for tool in tools}
 
-    assert len(names) == 19
+    assert len(names) == 20
     assert "civilplan_parse_project" in names
     assert "civilplan_generate_dxf_drawing" in names
+    assert "civilplan_generate_birdseye_view" in names
 
 
 def test_read_tools_have_read_only_hint() -> None:

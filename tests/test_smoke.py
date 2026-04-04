@@ -3,7 +3,7 @@ from civilplan_mcp.config import Settings, get_settings
 
 
 def test_package_version_present() -> None:
-    assert __version__ == "1.0.0"
+    assert __version__ == "2.0.0"
 
 
 def test_settings_have_expected_defaults() -> None:
