@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "civilplan-mcp"
-version = "1.0.0"
+version = "2.0.0"
 description = "CivilPlan MCP server for Korean civil and building project planning."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -24,6 +24,9 @@ dependencies = [
   "apscheduler>=3.10.0",
   "python-dotenv>=1.0.1",
   "python-dateutil>=2.9.0",
+  "google-genai>=1.0.0",
+  "cairosvg>=2.7.0",
+  "Pillow>=10.0.0",
 ]
 
 [project.scripts]

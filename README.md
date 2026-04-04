@@ -1,513 +1,413 @@
-# Construction-Project-Planning-Master-MCP
+# CivilPlan MCP v2.0.0
 
-**건설/건축 공사 사업계획을 AI와 함께 만듭니다**
-**Plan Korean construction projects with AI assistance**
+한국형 토목·건축 프로젝트 기획을 MCP 도구로 구조화하고 문서·도면·3D 렌더까지 생성하는 서버입니다.  
+CivilPlan MCP is an MCP server for Korean civil and building project planning that produces structured analysis, documents, drawings, and 3D renders.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-green.svg)](https://python.org)
-[![FastMCP](https://img.shields.io/badge/FastMCP-2.0+-orange.svg)](https://github.com/jlowin/fastmcp)
-
----
+[![FastMCP 2.0+](https://img.shields.io/badge/FastMCP-2.0+-orange.svg)](https://github.com/jlowin/fastmcp)
+[![Version 2.0.0](https://img.shields.io/badge/version-2.0.0-black.svg)](pyproject.toml)
 
 ## 소개 | Introduction
 
-CivilPlan MCP는 한국 토목/건축 사업의 **기획 단계 전 과정**을 AI가 지원하는 MCP(Model Context Protocol) 서버입니다. Claude, ChatGPT 등 AI 에이전트가 이 서버의 도구를 호출하여 사업비 산출, 법적 절차 확인, 도면 생성 등을 자동으로 수행합니다.
+CivilPlan MCP는 자연어 프로젝트 설명을 받아 인허가 검토, 물량 산정, 단가 조회, 투자 문서 작성, SVG/DXF 도면 생성, 3D Bird's-Eye View 렌더링까지 연결하는 20개 MCP 도구를 제공합니다.  
+CivilPlan MCP provides 20 MCP tools that turn natural-language project requests into permit reviews, quantity takeoff, pricing, planning documents, SVG/DXF drawings, and 3D bird's-eye renders.
 
-CivilPlan MCP is a FastMCP server that helps AI agents (Claude, ChatGPT, etc.) plan Korean civil engineering and building projects. It automates cost estimation, legal procedure identification, drawing generation, and more -- all through the MCP protocol.
+주요 흐름은 `프로젝트 파싱 → 법적·사업성 검토 → 산출물 생성`입니다.  
+The core flow is `project parsing → legal/financial review → output generation`.
 
-> **철학 | Philosophy**: 제4의길-AI와 함께 새로운 세상을 만들어갑니다.  -- 전문 기획 지식에 대한 접근 불평등을 줄입니다.
-> Reduce inequality in access to expert planning knowledge. Free to use, modify, and distribute.
-![시스템 개요 System Overview](docs/images/01_system_overview.png)
-![워크플로우 Workflow](docs/images/02_workflow.png)
-![단계별 다이어그램 Phase Diagram](docs/images/03_phase_diagram.png)
-![프로세스 흐름 Process Flow](docs/images/04_process_flow.png)
-![사업비 요약 Cost Summary](docs/images/05_cost_summary.png)
-![사업 일정 Project Timeline](docs/images/06_project_timeline.png)
-![종합 뷰 Comprehensive View](docs/images/07_comprehensive_view.png)
-![출력 예시 Output Examples](docs/images/08_output_examples.png)
-![문서 생성 Document Generation](docs/images/09_doc_generation.png)
-![상세 워크플로우 Detailed Workflow](docs/images/10_detailed_workflow.png)
-![평면도 Plan View](docs/images/11_plan_view.png)
----
+```mermaid
+flowchart LR
+    A["사용자 요청<br/>Natural-language request"] --> B["civilplan_parse_project"]
+    B --> C["법적·기획 분석<br/>legal / planning analysis"]
+    B --> D["물량·단가·사업성<br/>quantity / pricing / feasibility"]
+    B --> E["문서·도면 생성<br/>docs / drawings"]
+    B --> F["3D 렌더 생성<br/>bird's-eye / perspective render"]
+    C --> G["MCP 응답 JSON"]
+    D --> G
+    E --> G
+    F --> G
+```
 
-## 이런 분들에게 유용합니다 | Who Is This For?
+## 누가 쓰면 좋은가 | Who Is This For
 
-| 대상 | 활용 예시 |
-|------|----------|
-| **지자체 공무원** | 도로/상하수도 사업 기획 시 개략 사업비와 인허가 절차를 빠르게 파악 |
-| **건설 엔지니어** | 기획 단계 물량/단가 산출, 투자계획서 초안 작성 자동화 |
-| **부동산 개발 기획자** | 개발 사업의 법적 절차, 영향평가 대상 여부 확인 |
-| **건축주/시행사** | AI에게 자연어로 사업 설명 -> 구조화된 사업 계획 문서 일괄 생성 |
-| **학생/연구자** | 한국 건설 법령/표준품셈 학습 및 시뮬레이션 |
-
-| Who | Use Case |
-|-----|----------|
-| **Local government officials** | Quickly estimate project costs and permits for road/water projects |
-| **Civil engineers** | Automate preliminary quantity takeoff, unit pricing, and investment reports |
-| **Real estate developers** | Identify legal procedures and impact assessments for development projects |
-| **Project owners** | Describe a project in natural language -> get structured planning documents |
-| **Students & researchers** | Learn Korean construction law, standard specifications, and cost estimation |
-
----
+| 대상 Audience | 쓰는 이유 Why |
+|---|---|
+| 지자체·공공 발주 담당자<br/>Local government and public-sector planners | 초기 타당성, 절차, 예산 초안이 빠르게 필요할 때 사용합니다.<br/>Use it when you need a fast first-pass on feasibility, procedures, and budget. |
+| 토목·건축 엔지니어<br/>Civil and building engineers | 기획 단계 물량, 단가, 문서 초안을 자동화할 수 있습니다.<br/>Automate early-stage quantity takeoff, pricing, and planning documents. |
+| 개발사업 기획자<br/>Development planners | 자연어 설명만으로 구조화된 프로젝트 데이터와 시각 자료를 얻을 수 있습니다.<br/>Turn a plain-language project brief into structured project data and visuals. |
+| AI 에이전트 운영자<br/>AI agent builders | Claude, ChatGPT, 기타 MCP 클라이언트에 토목/건축 전용 도구 세트를 연결할 수 있습니다.<br/>Attach a Korean construction-planning toolset to Claude, ChatGPT, and other MCP clients. |
 
 ## 주요 기능 | Key Features
 
-### 19개 AI 도구 | 19 AI Tools
+### v2.0.0 변경점 | What's New in v2.0.0
 
-CivilPlan은 사업 기획의 전 과정을 커버하는 19개 도구를 제공합니다:
+| 항목 Item | 설명 Description |
+|---|---|
+| `civilplan_generate_birdseye_view` | Gemini 기반 3D Bird's-Eye View와 Perspective View를 한 번에 생성합니다.<br/>Generates Gemini-based bird's-eye and perspective renders in one call. |
+| `GEMINI_API_KEY` 설정 | `.env`와 Windows DPAPI 기반 `setup_keys.py` 양쪽에서 Gemini 키를 읽습니다.<br/>Reads the Gemini key from both `.env` and Windows DPAPI-based `setup_keys.py`. |
+| 도메인 프롬프트 템플릿 | 도로, 건축, 상하수도, 하천, 조경, 복합 프로젝트별 렌더 문구를 분리했습니다.<br/>Adds domain-specific render prompts for road, building, water, river, landscape, and mixed projects. |
+| 총 20개 MCP 도구 | 기존 기획/문서/도면 도구에 3D 시각화를 추가했습니다.<br/>Expands the server to 20 MCP tools by adding 3D visualization. |
 
-| # | 도구 Tool | 설명 Description |
-|---|-----------|-----------------|
-| 1 | `civilplan_parse_project` | 자연어 사업 설명 -> 구조화된 사업 정보 추출 / Parse natural language project description |
-| 2 | `civilplan_get_legal_procedures` | 사업 유형/규모별 법적 절차 자동 산출 / Identify applicable legal procedures |
-| 3 | `civilplan_get_phase_checklist` | 사업 단계별 체크리스트 생성 / Generate phase-specific checklists |
-| 4 | `civilplan_evaluate_impact_assessments` | 9종 영향평가 대상 여부 판단 / Evaluate 9 types of impact assessments |
-| 5 | `civilplan_estimate_quantities` | 표준 횡단면 기반 개략 물량 산출 / Estimate quantities from standard cross-sections |
-| 6 | `civilplan_get_unit_prices` | 공종별 단가 조회 (지역계수 반영) / Query unit prices with regional factors |
-| 7 | `civilplan_generate_boq_excel` | 사업내역서(BOQ) Excel 생성 / Generate BOQ spreadsheet |
-| 8 | `civilplan_generate_investment_doc` | 투자계획서(사업계획서) Word 생성 / Generate investment plan document |
-| 9 | `civilplan_generate_schedule` | 사업 추진 일정표 (간트차트형) 생성 / Generate project schedule |
-| 10 | `civilplan_generate_svg_drawing` | 개략 도면 SVG 생성 (평면도, 횡단면도) / Generate SVG drawings |
-| 11 | `civilplan_get_applicable_guidelines` | 적용 기준/지침 조회 / Get applicable guidelines |
-| 12 | `civilplan_fetch_guideline_summary` | 기준/지침 요약 조회 / Fetch guideline summaries |
-| 13 | `civilplan_select_bid_type` | 발주 방식 선정 / Select bid type |
-| 14 | `civilplan_estimate_waste_disposal` | 건설폐기물 처리비 산출 / Estimate waste disposal costs |
-| 15 | `civilplan_query_land_info` | 토지 정보 조회 (PNU, 용도지역) / Query land info |
-| 16 | `civilplan_analyze_feasibility` | 사업 타당성 분석 / Analyze project feasibility |
-| 17 | `civilplan_validate_against_benchmark` | 유사 사업비 벤치마크 검증 / Validate against benchmarks |
-| 18 | `civilplan_generate_budget_report` | 예산 보고서 생성 / Generate budget report |
-| 19 | `civilplan_generate_dxf_drawing` | DXF 도면 생성 (CAD 호환) / Generate DXF drawings |
+### 도구 목록 | Tool Catalog
 
-### 지원 사업 분야 | Supported Project Domains
+#### 기획·분석 도구 | Planning and Analysis Tools
 
-- `건축` -- 건축물 (Buildings)
-- `토목_도로` -- 도로 (Roads)
-- `토목_상하수도` -- 상하수도 (Water & Sewerage)
-- `토목_하천` -- 하천 (Rivers)
-- `조경` -- 조경 (Landscaping)
-- `복합` -- 복합 사업 (Mixed projects)
+| 도구 Tool | 설명 Description |
+|---|---|
+| `civilplan_parse_project` | 자연어 프로젝트 설명을 구조화된 JSON으로 변환합니다.<br/>Parses a natural-language project brief into structured JSON. |
+| `civilplan_get_legal_procedures` | 사업 조건에 맞는 인허가·환경 절차를 정리합니다.<br/>Finds permit and environmental procedures for the project. |
+| `civilplan_get_phase_checklist` | 단계별 체크리스트를 생성합니다.<br/>Builds phase-by-phase execution checklists. |
+| `civilplan_evaluate_impact_assessments` | 영향평가 필요 여부를 검토합니다.<br/>Evaluates impact-assessment requirements. |
+| `civilplan_estimate_quantities` | 개략 물량을 산정합니다.<br/>Estimates conceptual quantities. |
+| `civilplan_get_unit_prices` | 지역 보정이 반영된 단가를 조회합니다.<br/>Looks up unit prices with regional adjustments. |
+| `civilplan_get_applicable_guidelines` | 적용 대상 설계 기준을 찾습니다.<br/>Finds applicable design guidelines. |
+| `civilplan_fetch_guideline_summary` | 기준 전문의 핵심 항목을 요약합니다.<br/>Fetches summaries of guideline references. |
+| `civilplan_select_bid_type` | 발주·입찰 방식을 추천합니다.<br/>Recommends a bidding/procurement method. |
+| `civilplan_estimate_waste_disposal` | 건설폐기물 물량과 처리비를 계산합니다.<br/>Estimates construction waste volume and disposal cost. |
+| `civilplan_query_land_info` | 토지·지목·용도지역 정보를 조회합니다.<br/>Queries land, parcel, and zoning information. |
+| `civilplan_analyze_feasibility` | IRR, NPV, DSCR 등 사업성을 계산합니다.<br/>Calculates IRR, NPV, DSCR, and related feasibility metrics. |
+| `civilplan_validate_against_benchmark` | 공공 기준이나 벤치마크와 비교합니다.<br/>Checks estimates against public benchmarks. |
 
-### 출력 형식 | Output Formats
+#### 문서·도면 도구 | Document and Drawing Tools
 
-- **Excel (.xlsx)**: 사업내역서(BOQ), 일정표, 예산 보고서
-- **Word (.docx)**: 투자계획서(사업계획서)
-- **SVG**: 평면도, 횡단면도, 종단면도
-- **DXF**: CAD 호환 도면
-- **JSON**: 모든 도구의 구조화된 응답 데이터
+| 도구 Tool | 설명 Description |
+|---|---|
+| `civilplan_generate_boq_excel` | BOQ Excel 파일을 생성합니다.<br/>Generates a BOQ Excel workbook. |
+| `civilplan_generate_investment_doc` | 투자·사업계획 Word 문서를 생성합니다.<br/>Generates an investment/planning Word document. |
+| `civilplan_generate_budget_report` | 예산 보고서를 작성합니다.<br/>Builds a budget report document. |
+| `civilplan_generate_schedule` | 일정표 Excel 파일을 생성합니다.<br/>Creates a schedule workbook. |
+| `civilplan_generate_svg_drawing` | SVG 개략 도면을 생성합니다.<br/>Generates conceptual SVG drawings. |
+| `civilplan_generate_dxf_drawing` | DXF CAD 도면을 생성합니다.<br/>Generates DXF CAD drawings. |
+| `civilplan_generate_birdseye_view` | Bird's-Eye / Perspective PNG 렌더를 생성합니다.<br/>Generates bird's-eye and perspective PNG renders. |
 
----
+### 지원 도메인 | Supported Domains
+
+| 도메인 Domain | 설명 Description |
+|---|---|
+| `토목_도로` | 도로, 진입로, 포장, 차선 중심 프로젝트<br/>Roads, access roads, pavement, lane-focused projects |
+| `건축` | 건물, 복지관, 학교, 오피스 등 건축 프로젝트<br/>Buildings, welfare centers, schools, offices, and similar building projects |
+| `토목_상하수도` | 상수도, 하수도, 우수도, 관로 중심 프로젝트<br/>Water, sewer, stormwater, and pipeline-centric projects |
+| `토목_하천` | 하천 정비, 제방, 배수, 수변 구조물 프로젝트<br/>River improvement, levee, drainage, and riverside structure projects |
+| `조경` | 공원, 녹지, 식재, 휴게 공간 프로젝트<br/>Landscape, parks, planting, and open-space projects |
+| `복합` | 다분야가 섞인 복합 개발 프로젝트<br/>Mixed multi-domain development projects |
 
 ## 빠른 시작 가이드 | Quick Start Guide
 
-### 1단계: 설치 | Step 1: Install
+### 1. 저장소 받기 | Clone the Repository
 
 ```bash
-# 저장소 클론 | Clone the repository
 git clone https://github.com/sinmb79/Construction-project-master.git
 cd Construction-project-master
-
-# 가상환경 생성 및 활성화 | Create and activate virtual environment
 python -m venv .venv
+```
 
-# Windows:
+### 2. 가상환경 활성화와 패키지 설치 | Activate the Environment and Install Dependencies
+
+```bash
+# Windows
 .venv\Scripts\activate
-# macOS/Linux:
+
+# macOS / Linux
 source .venv/bin/activate
 
-# 패키지 설치 | Install dependencies
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-### 2단계: API 키 설정 | Step 2: Configure API Keys
+### 3. API 키 설정 | Configure API Keys
 
-일부 도구(토지 정보 조회 등)는 공공 API 키가 필요합니다. 없어도 대부분의 기능은 동작합니다.
+| 방법 Method | 명령 Command | 설명 Description |
+|---|---|---|
+| `.env` 파일 | `copy .env.example .env` (Windows)<br/>`cp .env.example .env` (macOS/Linux) | 로컬 개발용으로 가장 단순합니다.<br/>The simplest option for local development. |
+| 암호화 저장소 | `python setup_keys.py` | Windows DPAPI에 키를 암호화 저장합니다.<br/>Stores keys in Windows DPAPI-encrypted storage. |
 
-Some tools (land info queries, etc.) require public API keys. Most features work without them.
-
-**방법 A: `.env` 파일 | Option A: `.env` file**
-
-```bash
-# .env.example을 복사하여 키를 입력합니다
-# Copy .env.example and fill in your keys
-copy .env.example .env     # Windows
-cp .env.example .env       # macOS/Linux
-```
-
-`.env` 파일을 편집하여 키를 입력하세요:
+`.env` 예시는 아래와 같습니다.  
+An example `.env` looks like this.
 
 ```env
-# 공공데이터포털 (https://www.data.go.kr) 에서 발급
-DATA_GO_KR_API_KEY=your_key_here
-
-# 브이월드 (https://www.vworld.kr) 에서 발급
-VWORLD_API_KEY=your_key_here
+DATA_GO_KR_API_KEY=
+VWORLD_API_KEY=
+GEMINI_API_KEY=
 ```
 
-**방법 B: 암호화 저장 | Option B: Encrypted local storage**
-
-```bash
-# 대화형으로 키 입력 | Enter keys interactively
-python setup_keys.py
-
-# 또는 기존 .env 파일을 암호화 저장소로 가져오기
-# Or import from existing .env file
-python setup_keys.py --from-env-file .env
-```
-
-> Windows에서는 DPAPI를 사용하여 현재 사용자 프로필에 암호화 저장됩니다.
-> On Windows, keys are encrypted with DPAPI under your user profile.
-
-### 3단계: 서버 실행 | Step 3: Start the Server
+### 4. 서버 실행 | Start the Server
 
 ```bash
 python server.py
 ```
 
-서버가 `http://127.0.0.1:8765/mcp`에서 시작됩니다.
+실행 주소는 `http://127.0.0.1:8765/mcp` 입니다.  
+The server runs at `http://127.0.0.1:8765/mcp`.
 
-The server starts at `http://127.0.0.1:8765/mcp`.
+### 5. MCP 클라이언트 연결 | Connect an MCP Client
 
-### 4단계: AI 클라이언트 연결 | Step 4: Connect Your AI Client
+#### Claude Code
+
+```bash
+claude mcp add --transport http civilplan http://127.0.0.1:8765/mcp
+```
 
 #### Claude Desktop
 
-`claude_desktop_config.json` (또는 설정 파일)에 다음을 추가하세요:
+| 항목 Item | 값 Value |
+|---|---|
+| 서버 유형 Server type | HTTP MCP server |
+| URL | `http://127.0.0.1:8765/mcp` |
+| Windows 설정 파일 Common Windows config path | `%APPDATA%\Claude\claude_desktop_config.json` |
 
-Add the following to your `claude_desktop_config.json`:
+HTTP MCP 서버를 추가한 뒤 Claude Desktop을 재시작하세요.  
+Add the HTTP MCP server and restart Claude Desktop.
 
-```json
-{
-  "mcpServers": {
-    "civilplan": {
-      "command": "mcp-remote",
-      "args": ["http://127.0.0.1:8765/mcp"]
-    }
-  }
-}
-```
+#### ChatGPT Developer Mode
 
-#### Claude Code (CLI)
+| 단계 Step | 설명 Description |
+|---|---|
+| 1 | ChatGPT에서 `Settings → Apps → Advanced settings → Developer mode`를 켭니다.<br/>Enable `Settings → Apps → Advanced settings → Developer mode` in ChatGPT. |
+| 2 | `Create app`를 눌러 원격 MCP 서버를 등록합니다.<br/>Click `Create app` to register a remote MCP server. |
+| 3 | 로컬 서버는 직접 연결되지 않으므로 터널 URL이 필요합니다.<br/>Local servers cannot be connected directly, so you need a tunnel URL. |
 
-```bash
-claude mcp add civilplan http://127.0.0.1:8765/mcp
-```
-
-#### ChatGPT (Developer Mode)
-
-ChatGPT는 localhost에 직접 연결할 수 없습니다. ngrok 또는 Cloudflare Tunnel을 사용하세요.
-
-ChatGPT cannot connect to localhost directly. Use ngrok or Cloudflare Tunnel:
+`cloudflared` 예시는 아래와 같습니다.  
+An example `cloudflared` tunnel command is shown below.
 
 ```bash
-# ngrok으로 서버를 외부에 노출
-ngrok http 8765
+cloudflared tunnel --url http://127.0.0.1:8765
 ```
 
-생성된 HTTPS URL을 ChatGPT 설정 -> Connectors -> Create에 입력합니다.
+터널이 만든 HTTPS URL을 ChatGPT 앱 생성 화면에 넣으세요.  
+Use the HTTPS URL produced by the tunnel when creating the ChatGPT app.
 
-Use the generated HTTPS URL in ChatGPT Settings -> Connectors -> Create.
+#### 기타 MCP 클라이언트 | Other MCP Clients
 
----
+| 항목 Item | 값 Value |
+|---|---|
+| 프로토콜 Protocol | Streaming HTTP |
+| URL | `http://127.0.0.1:8765/mcp` |
 
 ## 실전 사용 예시 | Real-World Usage Examples
 
-### 예시 1: 소로 개설(신설) 공사 기획 | Example 1: Planning a New Local Road
+### 예시 1: 도로 프로젝트 파싱 | Example 1: Parse a Road Project
 
-아래는 실제로 CivilPlan MCP를 사용하여 생성한 예시입니다.
+**AI에게 이렇게 말하세요 | Say this to the AI**
 
-Below is a real example generated using CivilPlan MCP.
-
-#### AI에게 이렇게 말하세요 | Say this to your AI:
-
-```
-소로 신설 L=890m B=6m 아스콘 2차선 상하수도 경기도 둔턱지역 2026~2028
+```text
+도로 신설 L=890m B=6m 아스콘 2차선 상하수도 경기도 화성시 2026~2028
 ```
 
-#### CivilPlan이 자동으로 수행하는 작업 | What CivilPlan does automatically:
+**호출되는 도구 | Tool called**
 
-**1) 사업 정보 파싱 | Project Parsing** (`civilplan_parse_project`)
+```python
+civilplan_parse_project(
+    description="도로 신설 L=890m B=6m 아스콘 2차선 상하수도 경기도 화성시 2026~2028"
+)
+```
 
-자연어 입력을 구조화된 데이터로 변환합니다:
+**결과 예시 | Example result**
 
 ```json
 {
-  "project_id": "PRJ-20260402-001",
-  "project_type": ["도로", "상수도", "하수도"],
+  "project_id": "PRJ-20260404-001",
+  "domain": "토목_도로",
+  "sub_domains": ["토목_상하수도"],
+  "project_type": ["도로", "하수도"],
   "road": {
-    "class": "소로",
-    "length_m": 890,
+    "length_m": 890.0,
     "width_m": 6.0,
     "lanes": 2,
     "pavement": "아스콘"
   },
-  "terrain": "구릉(둔턱)",
-  "terrain_factor": 1.4,
   "region": "경기도",
-  "region_factor": 1.05,
   "year_start": 2026,
   "year_end": 2028,
-  "utilities": ["상수도", "하수도"]
+  "parsed_confidence": 0.92
 }
 ```
 
-**2) 개략 물량 산출 | Quantity Estimation** (`civilplan_estimate_quantities`)
+### 예시 2: 인허가 절차 확인 | Example 2: Check Legal Procedures
 
-표준 횡단면 기준으로 주요 물량을 자동 산출합니다:
+**AI에게 이렇게 말하세요 | Say this to the AI**
 
-```
-도로 포장: 아스콘 표층 523t, 기층 628t
-토공:      절토 8,000m3, 성토 5,400m3
-배수:      L형측구 1,780m, 횡단암거 60m
-상수도:    PE관 DN100 890m, 소화전 3개소
-하수도:    오수관 890m, 우수관 890m, 맨홀 37개소
+```text
+경기도 공공 도로 사업(총사업비 10.67억, 연장 890m)에 필요한 인허가를 정리해줘
 ```
 
-**3) 사업비 산출 | Cost Estimation** (`civilplan_generate_boq_excel`)
+**호출되는 도구 | Tool called**
 
-6개 시트로 구성된 사업내역서 Excel 파일을 생성합니다:
-
-| 시트 Sheet | 내용 Contents |
-|-----------|--------------|
-| 사업개요 | 프로젝트 정보, 면책문구 |
-| 사업내역서(BOQ) | 8개 대공종별 수량 x 단가 = 금액 (수식 포함) |
-| 물량산출근거 | 공종별 계산식 (예: 아스콘 표층 = 4,450m2 x 0.05m x 2.35t/m3) |
-| 간접비산출 | 설계비 3.5%, 감리비 3.0%, 부대비 2.0%, 예비비 10% |
-| 총사업비요약 | 직접공사비 + 간접비 = **약 10.67억원** |
-| 연도별투자계획 | 2026: 30%, 2027: 50%, 2028: 20% |
-
-**4) 법적 절차 확인 | Legal Procedures** (`civilplan_get_legal_procedures`)
-
-18개 법적 절차를 자동으로 식별하고, 필수/선택 여부, 소요 기간, 근거 법령을 제공합니다:
-
-```
-필수 절차 12건, 선택 절차 6건
-예상 인허가 소요: 약 18개월
-핵심 경로: 도시계획시설결정 -> 개발행위허가 -> 실시계획인가
+```python
+civilplan_get_legal_procedures(
+    domain="토목_도로",
+    project_type="도로",
+    total_cost_billion=10.67,
+    road_length_m=890,
+    development_area_m2=None,
+    region="경기도",
+    has_farmland=False,
+    has_forest=False,
+    has_river=False,
+    is_public=True
+)
 ```
 
-**5) 영향평가 판단 | Impact Assessments** (`civilplan_evaluate_impact_assessments`)
-
-9종 영향평가 대상 여부를 자동 판단합니다:
-
-| 평가 항목 | 대상 여부 | 근거 |
-|----------|----------|------|
-| 예비타당성조사 | 비대상 | 총사업비 500억 미만 |
-| 지방재정투자심사 | **대상** | 총사업비 10.7억 > 10억 |
-| 소규모환경영향평가 | **검토 필요** | 개발면적 5,340m2 |
-| 재해영향평가 | **경계선** | 개발면적 5,000m2 이상 |
-| 매장문화재 지표조사 | **검토 필요** | 개발면적 3,000m2 이상 |
-
-**6) 도면 생성 | Drawing Generation** (`civilplan_generate_svg_drawing`)
-
-평면도와 횡단면도를 SVG 형식으로 생성합니다:
-- **평면도**: 도로 중심선, 측점, 관로 배치, 지형(둔턱) 표시, 구조물 위치
-- **횡단면도**: 포장 단면(표층->기층->보조기층->동상방지층), 절토/성토 비탈면, 매설 관로
-
-**7) 투자계획서 | Investment Document** (`civilplan_generate_investment_doc`)
-
-위 모든 결과를 종합하여 Word 투자계획서를 자동 생성합니다:
-
-```
-표지
-목차
-제1장 사업 개요 (목적, 위치, 기간)
-제2장 사업 규모 및 내용 (도로 현황, 부대시설, 지형)
-제3장 사업비 산출 (BOQ 요약, 간접비, 연도별 투자계획)
-제4장 법적 절차 및 추진 일정
-제5장 기대 효과 및 결론
-별첨: 위치도, 횡단면도
-```
-
-### 예시 2: 단가 조회 | Example 2: Unit Price Query
-
-```
-경기도 지역의 포장 관련 단가를 알려줘
-```
-
-AI가 `civilplan_get_unit_prices`를 호출하여 지역계수가 반영된 단가를 조회합니다:
+**결과 예시 | Example result**
 
 ```json
 {
-  "item": "아스콘표층(밀입도13mm)",
-  "spec": "t=50mm",
-  "unit": "t",
-  "base_price": 96000,
-  "region_factor": 1.05,
-  "adjusted_price": 100800,
-  "source": "조달청 표준시장단가 2026 상반기"
+  "summary": {
+    "total_procedures": 3,
+    "mandatory_count": 2,
+    "optional_count": 1,
+    "estimated_prep_months": 12,
+    "critical_path": [
+      "도시·군관리계획 결정",
+      "개발행위허가",
+      "소규모환경영향평가"
+    ]
+  },
+  "timeline_estimate": {
+    "인허가완료목표": "착공 18개월 전"
+  }
 }
 ```
 
-### 예시 3: 단계별 체크리스트 | Example 3: Phase Checklist
+### 예시 3: SVG 도면 생성 | Example 3: Generate an SVG Drawing
 
-```
-도로 공사 단계에서 해야 할 의무사항을 알려줘
-```
+**AI에게 이렇게 말하세요 | Say this to the AI**
 
-AI가 `civilplan_get_phase_checklist`를 호출합니다:
-
-```
-[필수] 착공신고 -- 건설산업기본법 제39조, 착공 전
-       미이행 시 500만원 이하 과태료
-[필수] 품질시험계획 수립 -- 미제출 시 기성 지급 불가
-[필수] 안전관리계획 수립/인가
-...
+```text
+위 프로젝트로 개략 평면도 SVG를 만들어줘
 ```
 
----
+**호출되는 도구 | Tool called**
 
-## 시스템 아키텍처 | System Architecture
-
-```
-Claude / ChatGPT / AI Agent
-      |  MCP Protocol (Streamable HTTP)
-      v
-+------------------------------------------+
-|        CivilPlan MCP (FastMCP)           |
-|                                          |
-|  parse_project          -> JSON          |
-|  get_legal_procedures   -> JSON          |
-|  evaluate_impact        -> JSON          |
-|  estimate_quantities    -> JSON          |
-|  generate_boq_excel     -> .xlsx         |
-|  generate_investment    -> .docx         |
-|  generate_schedule      -> .xlsx         |
-|  generate_svg_drawing   -> .svg          |
-|  generate_dxf_drawing   -> .dxf          |
-|  ... (19 tools total)                    |
-+--------------------+---------------------+
-                     |
-              +------v------+     +--------------+
-              |  SQLite DB  |     |  JSON Data   |
-              | unit_prices |     | legal_procs  |
-              | legal_procs |     | region_facts |
-              | project_log |     | road_stds    |
-              +-------------+     +--------------+
+```python
+civilplan_generate_svg_drawing(
+    drawing_type="평면도",
+    project_spec=project_spec,
+    quantities=quantities,
+    scale="1:200",
+    output_filename="road-plan.svg"
+)
 ```
 
----
+**결과 예시 | Example result**
+
+```json
+{
+  "status": "success",
+  "file_path": "output/road-plan.svg",
+  "drawing_type": "평면도",
+  "quantity_sections": ["earthwork", "pavement", "drainage"]
+}
+```
+
+### 예시 4: Bird's-Eye View 렌더 생성 | Example 4: Generate a Bird's-Eye Render
+
+**AI에게 이렇게 말하세요 | Say this to the AI**
+
+```text
+이 도로 사업을 발표용 3D 조감도와 사람 시점 투시도로 만들어줘
+```
+
+**호출되는 도구 | Tool called**
+
+```python
+civilplan_generate_birdseye_view(
+    project_summary="경기도 화성시 도로 신설 890m, 폭 6m, 2차선 아스콘 포장, 상하수도 포함",
+    project_spec=project_spec,
+    svg_drawing="<svg>...</svg>",
+    resolution="2K"
+)
+```
+
+**결과 예시 | Example result**
+
+```json
+{
+  "status": "success",
+  "project_id": "PRJ-20260404-001",
+  "model": "gemini-3-pro-image-preview",
+  "resolution": "2K",
+  "reference_image_path": "output/PRJ-20260404-001_reference.png",
+  "birdseye_view": {
+    "status": "success",
+    "path": "output/PRJ-20260404-001_birdseye.png"
+  },
+  "perspective_view": {
+    "status": "success",
+    "path": "output/PRJ-20260404-001_perspective.png"
+  }
+}
+```
 
 ## 프로젝트 구조 | Project Structure
 
-```
+```text
 Construction-project-master/
-|-- server.py                  # 메인 서버 진입점 | Main server entry point
-|-- setup_keys.py              # API 키 설정 도구 | API key setup utility
-|-- pyproject.toml             # 프로젝트 메타데이터 | Project metadata
-|-- requirements.txt           # 의존성 목록 | Dependencies
-|-- .env.example               # 환경변수 템플릿 | Environment template
-|-- LICENSE                    # MIT 라이선스 | MIT License
-|
-|-- civilplan_mcp/             # 메인 패키지 | Main package
-|   |-- server.py              # FastMCP 서버 정의 | FastMCP server definition
-|   |-- config.py              # 설정, 경로, 상수 | Config, paths, constants
-|   |-- models.py              # Pydantic 모델 | Pydantic models
-|   |-- secure_store.py        # 암호화 키 저장 | Encrypted key storage
-|   |-- tools/                 # 19개 MCP 도구 구현 | 19 MCP tool implementations
-|   |-- data/                  # JSON 참조 데이터 | JSON reference data
-|   |-- db/                    # SQLite 스키마 및 시드 | SQLite schema & seeds
-|   +-- updater/               # 자동 데이터 갱신 | Automated data updaters
-|
-+-- tests/                     # 테스트 스위트 | Test suite
-    |-- test_smoke.py          # 기본 동작 확인 | Basic smoke tests
-    |-- test_parser.py         # 파서 테스트 | Parser tests
-    |-- test_legal.py          # 법적 절차 테스트 | Legal procedure tests
-    |-- test_quantities.py     # 물량 산출 테스트 | Quantity tests
-    |-- test_generators.py     # 파일 생성 테스트 | Generator tests
-    +-- ...                    # 기타 테스트 | Other tests
+├─ server.py                      # 서버 실행 진입점 | Server entrypoint
+├─ setup_keys.py                  # 암호화 키 저장 유틸 | Encrypted key setup helper
+├─ requirements.txt               # 런타임 의존성 | Runtime dependencies
+├─ pyproject.toml                 # 패키지 메타데이터 | Package metadata
+├─ README.md                      # 사용 가이드 | Usage guide
+├─ civilplan_mcp/
+│  ├─ __init__.py                 # 버전 정보 | Version metadata
+│  ├─ config.py                   # 설정·경로·API 키 로딩 | Settings, paths, API key loading
+│  ├─ models.py                   # 도메인 enum | Domain enums
+│  ├─ secure_store.py             # DPAPI 키 저장 | DPAPI-backed key store
+│  ├─ prompts/
+│  │  └─ birdseye_templates.py    # 도메인별 렌더 프롬프트 | Domain-specific render prompts
+│  ├─ services/
+│  │  └─ gemini_image.py          # Gemini 이미지 래퍼 | Gemini image wrapper
+│  ├─ tools/
+│  │  ├─ birdseye_generator.py    # 3D 렌더 도구 | 3D rendering tool
+│  │  ├─ drawing_generator.py     # SVG 도면 생성 | SVG drawing generator
+│  │  ├─ dxf_generator.py         # DXF 도면 생성 | DXF drawing generator
+│  │  └─ ...                      # 나머지 MCP 도구 | Remaining MCP tools
+│  ├─ data/                       # 기준 JSON 데이터 | Reference JSON data
+│  ├─ db/                         # SQLite schema/bootstrap | SQLite schema/bootstrap
+│  └─ updater/                    # 데이터 갱신 로직 | Data update logic
+└─ tests/
+   ├─ test_config_and_secure_store.py
+   ├─ test_gemini_image.py
+   ├─ test_birdseye_templates.py
+   ├─ test_birdseye_generator.py
+   └─ ...                         # 전체 회귀 테스트 | Full regression tests
 ```
 
----
+## 자주 겪는 문제 | FAQ and Troubleshooting
 
-## 데이터 자동 갱신 | Automated Data Updates
-
-CivilPlan은 단가/임금/폐기물 처리비 등 참조 데이터의 정기 갱신을 지원합니다:
-
-CivilPlan supports scheduled updates for reference data (wages, prices, waste rates):
-
-| 시기 Timing | 갱신 항목 Update Item |
-|------------|---------------------|
-| 1월 2일 09:00 | 상반기 임금, 폐기물 처리비, 간접비율 |
-| 7월 10일 09:00 | 하반기 표준시장단가, 간접비율 |
-| 9월 2일 09:00 | 하반기 임금 |
-
-갱신 실패 시 `.update_required_*` 플래그 파일이 생성되고, 서버 시작 시 경고가 표시됩니다.
-
-If an update fails, `.update_required_*` flag files are created and startup warnings are shown.
-
----
-
-## 토지 정보 데이터 설정 | Land Price Data Setup
-
-토지 가격 조회 기능을 사용하려면 수동으로 데이터를 다운로드해야 합니다:
-
-To use land price lookup, manually download data files:
-
-1. 국토교통부 또는 한국부동산원에서 공시지가 CSV/TSV 파일 다운로드
-2. `civilplan_mcp/data/land_prices/` 폴더에 넣기
-3. UTF-8, CP949, EUC-KR 인코딩 모두 지원
-
-```
-civilplan_mcp/data/land_prices/
-  (여기에 CSV/TSV/ZIP 파일을 넣으세요)
-  (Place your CSV/TSV/ZIP files here)
-```
-
----
-
-## 테스트 실행 | Running Tests
-
-```bash
-pytest tests -q
-```
-
-모든 테스트는 외부 API 키 없이도 실행 가능합니다 (로컬 폴백 사용).
-
-All tests run without external API keys (using local fallbacks).
-
----
+| 문제 Problem | 확인 방법 What to Check | 해결 방법 Fix |
+|---|---|---|
+| `GEMINI_API_KEY is not configured` | `.env` 또는 `setup_keys.py` 저장 여부를 확인합니다.<br/>Check `.env` or whether `setup_keys.py` stored the key. | `GEMINI_API_KEY`를 입력하고 서버를 재시작합니다.<br/>Add `GEMINI_API_KEY` and restart the server. |
+| ChatGPT에서 localhost 연결 실패 | ChatGPT는 로컬 URL을 직접 쓰지 못합니다.<br/>ChatGPT cannot use a localhost URL directly. | `cloudflared` 또는 `ngrok`로 HTTPS 터널을 노출합니다.<br/>Expose the server through an HTTPS tunnel such as `cloudflared` or `ngrok`. |
+| Claude Code에서 도구가 안 보임 | `claude mcp list`로 등록 상태를 확인합니다.<br/>Use `claude mcp list` to verify registration. | `claude mcp add --transport http civilplan http://127.0.0.1:8765/mcp`를 다시 실행합니다.<br/>Re-run the HTTP MCP registration command. |
+| SVG 참고 이미지가 반영되지 않음 | `cairosvg` 설치 여부와 SVG 문자열 유효성을 확인합니다.<br/>Check whether `cairosvg` is installed and the SVG string is valid. | 잘못된 SVG면 텍스트 전용 렌더로 fallback 됩니다.<br/>If SVG conversion fails, the tool falls back to text-only rendering. |
+| 전체 테스트를 다시 돌리고 싶음 | 아래 명령을 사용합니다.<br/>Use the following command. | `python -m pytest tests/ -q` |
 
 ## 알려진 제한사항 | Known Limitations
 
-- **개략 산출**: 모든 사업비/물량은 기획 단계용 개략 산출이며, 실시설계를 대체하지 않습니다 (+-20~30% 오차 가능).
-  *All estimates are preliminary (+-20-30% variance) and do not replace detailed design.*
+| 항목 Item | 설명 Description |
+|---|---|
+| 기획 단계 정확도 | 모든 수치와 절차는 개략 검토용입니다.<br/>All numbers and procedures are intended for conceptual planning only. |
+| 3D 렌더 의존성 | `civilplan_generate_birdseye_view`는 인터넷 연결과 `GEMINI_API_KEY`가 필요합니다.<br/>`civilplan_generate_birdseye_view` requires internet access and a `GEMINI_API_KEY`. |
+| 토지 정보 | 일부 토지 데이터는 외부 API 상태에 따라 결과가 달라질 수 있습니다.<br/>Some land information depends on external API availability. |
+| 조경·복합 도메인 | 프롬프트와 절차 데이터가 계속 보강 중입니다.<br/>Landscape and mixed-domain support is still being expanded. |
+| 공개 제출 문서 | 생성 결과는 공식 제출 문서가 아닙니다.<br/>Generated outputs are not valid submission documents. |
 
-- **토지 용도 데이터**: 외부 서비스 불안정으로 일부 필지의 용도지역 정보가 불완전할 수 있습니다.
-  *External land-use services can be unstable; some parcels may return partial zoning data.*
+## 면책사항 | Disclaimer
 
-- **공시지가 조회**: 수동 다운로드 필요 (`civilplan_mcp/data/land_prices/`).
-  *Land price lookup requires manually downloaded source files.*
-
-- **나라장터 벤치마크**: 공공 API가 불안정하여 로컬 휴리스틱으로 폴백합니다.
-  *Nara benchmark validation falls back to local heuristics when the public API is unavailable.*
-
-- **조경 분야**: 법적 절차 데이터가 아직 완전하지 않습니다.
-  *Landscape-specific legal/procedure data is not fully implemented yet.*
-
----
-
-## 면책 조항 | Disclaimer
-
-> 본 도구의 산출 결과는 **기획 단계 참고용**이며, 실시설계/시공을 위한 공식 문서로 사용할 수 없습니다.
-> 실제 사업 집행 시에는 반드시 관련 분야 전문가의 검토를 받으시기 바랍니다.
->
-> All outputs are for **preliminary planning reference only** and cannot be used as official documents for detailed design or construction.
-> Please consult qualified professionals before executing any actual project.
-
----
+> 본 저장소의 결과물은 기획 단계 참고자료이며, 상세 설계·발주·공식 제출용 문서를 대체하지 않습니다.  
+> Outputs from this repository are planning-stage references and do not replace detailed design, procurement, or official submission documents.
 
 ## 라이선스 | License
 
-MIT License -- 자유롭게 사용, 수정, 배포할 수 있습니다.
-
-MIT License -- Free to use, modify, and distribute.
-
----
+| 항목 Item | 내용 Detail |
+|---|---|
+| 라이선스 License | MIT |
+| 사용 범위 Usage | 사용, 수정, 배포 가능<br/>Free to use, modify, and distribute |
 
 ## 만든 사람 | Author
 
-**22B Labs** (sinmb79)
-
-문의사항이나 기여는 [Issues](https://github.com/sinmb79/Construction-project-master/issues)를 이용해 주세요.
-
-For questions or contributions, please use [Issues](https://github.com/sinmb79/Construction-project-master/issues).
+| 항목 Item | 내용 Detail |
+|---|---|
+| 팀 Team | **22B Labs** |
+| 저장소 Repository | [sinmb79/Construction-project-master](https://github.com/sinmb79/Construction-project-master) |
+| 문의 Contact | [Issues](https://github.com/sinmb79/Construction-project-master/issues) |

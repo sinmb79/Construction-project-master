@@ -16,6 +16,7 @@ from civilplan_mcp import __version__
 from civilplan_mcp.config import check_api_keys, get_settings
 from civilplan_mcp.tools.benchmark_validator import validate_against_benchmark
 from civilplan_mcp.tools.bid_type_selector import select_bid_type
+from civilplan_mcp.tools.birdseye_generator import generate_birdseye_view
 from civilplan_mcp.tools.boq_generator import generate_boq_excel
 from civilplan_mcp.tools.budget_report_generator import generate_budget_report
 from civilplan_mcp.tools.doc_generator import generate_investment_doc
@@ -113,6 +114,7 @@ def build_mcp() -> FastMCP:
     _register_read_tool(app, "civilplan_validate_against_benchmark", validate_against_benchmark)
     _register_write_tool(app, "civilplan_generate_budget_report", generate_budget_report)
     _register_write_tool(app, "civilplan_generate_dxf_drawing", generate_dxf_drawing)
+    _register_write_tool(app, "civilplan_generate_birdseye_view", generate_birdseye_view)
     return app
 
 

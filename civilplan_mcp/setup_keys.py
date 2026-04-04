@@ -42,11 +42,13 @@ def main(argv: list[str] | None = None) -> int:
 
     data_go_kr_api_key = _prompt_value("DATA_GO_KR_API_KEY", imported.get("DATA_GO_KR_API_KEY", ""))
     vworld_api_key = _prompt_value("VWORLD_API_KEY", imported.get("VWORLD_API_KEY", ""))
+    gemini_api_key = _prompt_value("GEMINI_API_KEY", imported.get("GEMINI_API_KEY", ""))
 
     target = save_api_keys(
         {
             "DATA_GO_KR_API_KEY": data_go_kr_api_key,
             "VWORLD_API_KEY": vworld_api_key,
+            "GEMINI_API_KEY": gemini_api_key,
         }
     )
 
